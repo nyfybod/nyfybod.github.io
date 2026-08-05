@@ -1,321 +1,1411 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    
-    <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108976493', 'ym');
-
-    ym(108976493, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/108976493" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <link rel="icon" href="https://png.klev.club/uploads/posts/2024-04/png-klev-club-krke-p-rast-ikonka-png-4.png" type="image/x-icon">
-<!-- /Yandex.Metrika counter -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rust Raid Helper - Ultimate</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>nyfybod</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <style>
-        :root {
-            --bg-deep: #0f0c29; 
-            --card-bg: rgba(20, 15, 35, 0.9);
-            --accent: #b794ff; 
-            --text: #f0f0f0;
-            --sulfur: #f1c40f;
-            --mouse-wind: 0px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none !important;
+            user-select: none;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(to bottom, rgba(15, 12, 41, 0.7), rgba(36, 36, 62, 0.7)), url('wallpaper/wallpaper.png');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: var(--text); margin: 0; padding: 20px; min-height: 100vh; display: flex; justify-content: center; overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0b0b0e;
+            color: #f0f0f0;
+            min-height: 100vh;
+            overflow: hidden;
         }
 
-        .ripple { position: absolute; border-radius: 50%; background: rgba(183, 148, 255, 0.4); transform: scale(0); animation: ripple-animation 0.6s linear; pointer-events: none; }
-        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.4) saturate(0.7);
+        }
 
-        #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .snow-particle { position: absolute; background-color: #fff; border-radius: 50%; filter: blur(1px); opacity: 0.4; animation: fall linear forwards; }
-        @keyframes fall { from { transform: translateY(-10px) translateX(0); } to { transform: translateY(110vh) translateX(var(--mouse-wind)); } }
+        .volume-control {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(18, 18, 24, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem 0.5rem 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            cursor: none;
+        }
 
-        .container { max-width: 1000px; width: 100%; position: relative; z-index: 10; }
-        h1 { text-align: center; letter-spacing: 5px; color: var(--accent); text-transform: uppercase; margin-bottom: 30px; text-shadow: 0 0 15px rgba(183,148,255,0.4); }
+        .volume-control input[type="range"] {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            outline: none;
+            cursor: none;
+        }
 
-        .main-layout { display: flex; gap: 20px; align-items: flex-start; }
-        .left-col { flex: 1.8; }
-        .right-col { flex: 1.2; position: sticky; top: 20px; }
+        .volume-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #00f5d4;
+            cursor: none;
+            box-shadow: 0 0 20px rgba(0, 245, 212, 0.3);
+        }
 
-        .section { background: var(--card-bg); backdrop-filter: blur(15px); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; overflow: hidden; box-shadow: 0 5px 25px rgba(0,0,0,0.6); }
-        
-        .acc-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .section.active .acc-wrapper { grid-template-rows: 1fr; }
+        .volume-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            min-width: 30px;
+            text-align: center;
+        }
 
-        .acc-header { padding: 18px 25px; background: rgba(255,255,255,0.03); cursor: pointer; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; color: var(--accent); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; }
-        .acc-header::after { content: '▼'; font-size: 0.7rem; transition: 0.4s; opacity: 0.5; }
-        .section.active .acc-header::after { transform: rotate(180deg); }
+        .volume-icon {
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
 
-        .acc-content { overflow: hidden; }
-        .inner-padding { padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .glass-container {
+            position: relative;
+            z-index: 5;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            animation: fadeIn 0.8s ease forwards;
+            perspective: 1200px;
+        }
 
-        .sub-label { font-size: 0.65rem; color: #888; text-transform: uppercase; margin: 15px 0 10px 0; letter-spacing: 1px; display: block; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 3px; }
-        .sub-label:first-child { margin-top: 0; }
+        .glass-container.active {
+            display: flex;
+        }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
-        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
-        .card:hover { transform: translateY(-3px); background: rgba(183, 148, 255, 0.1); border-color: var(--accent); }
-        .card img { width: 42px; height: 42px; margin-bottom: 8px; transition: 0.3s; pointer-events: none; }
-        .card span { font-size: 0.75rem; pointer-events: none; }
-        .card.active { border-color: var(--accent); background: rgba(183, 148, 255, 0.2); box-shadow: 0 0 15px rgba(183,148,255,0.2); }
+        .card-wrapper {
+            position: relative;
+            max-width: 600px;
+            width: 100%;
+            touch-action: none;
+            cursor: grab;
+            transition: filter 0.3s ease;
+        }
 
-        .result-box { background: rgba(0,0,0,0.7); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid rgba(183, 148, 255, 0.3); }
-        .res-val { font-size: 2.2rem; font-weight: bold; color: var(--accent); display: block; margin: 5px 0; }
-        .sulfur-color { color: var(--sulfur); text-shadow: 0 0 10px rgba(241, 196, 15, 0.3); }
-        
-        @media (max-width: 768px) { .main-layout { flex-direction: column; } .right-col { width: 100%; position: static; } }
+        .card-wrapper:active {
+            cursor: grabbing;
+        }
+
+        .card-wrapper.dragging {
+            cursor: grabbing;
+            filter: drop-shadow(0 20px 60px rgba(255, 255, 255, 0.08));
+        }
+
+        /* ===== КАРТОЧКА ===== */
+        .card {
+            width: 100%;
+            padding: 2.5rem 2rem 2.2rem;
+            border-radius: 2.5rem;
+            position: relative;
+            text-align: center;
+            border: 1px solid transparent;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            transition: transform 0.08s ease-out, box-shadow 0.3s ease-out;
+            transform-style: preserve-3d;
+            will-change: transform;
+            overflow: hidden;
+        }
+
+        /* ——— ЧЁРНО-БЕЛЫЙ ПЕРЕЛИВАЮЩИЙСЯ ФОН ——— */
+        .card::before {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+            border-radius: 2.5rem;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(0, 0, 0, 0.25) 20%,
+                rgba(255, 255, 255, 0.2) 40%,
+                rgba(0, 0, 0, 0.25) 60%,
+                rgba(255, 255, 255, 0.15) 80%,
+                rgba(0, 0, 0, 0.2) 100%
+            );
+            background-size: 300% 300%;
+            animation: metalShimmer 4s ease-in-out infinite;
+            filter: blur(20px);
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        @keyframes metalShimmer {
+            0% { background-position: 0% 50%; transform: rotate(0deg) scale(1); }
+            25% { background-position: 100% 50%; transform: rotate(90deg) scale(1.1); }
+            50% { background-position: 50% 100%; transform: rotate(180deg) scale(0.95); }
+            75% { background-position: 0% 100%; transform: rotate(270deg) scale(1.05); }
+            100% { background-position: 0% 50%; transform: rotate(360deg) scale(1); }
+        }
+
+        /* ——— РОЗОВАЯ ГРАНИЦА ПО ПЕРИМЕТРУ ——— */
+        .card::after {
+            content: "";
+            position: absolute;
+            z-index: 1;
+            inset: -2px;
+            border-radius: 2.5rem;
+            padding: 2px;
+            background: linear-gradient(
+                135deg,
+                #ff69b4,
+                #1a1a2e,
+                #ff69b4,
+                #1a1a2e,
+                #ff69b4
+            );
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderShimmer 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes borderShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ——— ВНУТРЕННИЙ ФОН (поверх перелива, но под контентом) ——— */
+        .card .card-bg {
+            position: absolute;
+            z-index: 2;
+            inset: 2px;
+            border-radius: calc(2.5rem - 2px);
+            background: rgba(18, 18, 24, 0.7);
+            backdrop-filter: blur(28px);
+            pointer-events: none;
+        }
+
+        .card > * {
+            position: relative;
+            z-index: 3;
+        }
+
+        .card .layer {
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .avatar-wrapper {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 1.2rem;
+            position: relative;
+            z-index: 3;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.15), 0 10px 30px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .avatar-banner {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .avatar-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0.85;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .avatar-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%);
+            pointer-events: none;
+        }
+
+        .avatar-wrapper:hover .avatar-banner img {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+
+        .avatar {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: #0b0b0e;
+            overflow: hidden;
+            background: transparent;
+            transition: box-shadow 0.3s ease, transform 0.3s ease-out;
+            transform-style: preserve-3d;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .name-wrapper {
+            position: relative;
+            display: inline-block;
+            z-index: 3;
+            min-height: 2.5rem;
+        }
+
+        .name {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.15rem;
+            display: inline-block;
+            background: linear-gradient(
+                90deg,
+                #ffffff 0%,
+                #c0c0c0 25%,
+                #888888 50%,
+                #c0c0c0 75%,
+                #ffffff 100%
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerName 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2)) 
+                    drop-shadow(0 0 40px rgba(200, 200, 200, 0.1));
+        }
+
+        @keyframes shimmerName {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.4em;
+            background: #ffffff;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: blink 0.7s step-end infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .bio {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2.2rem;
+            font-weight: 400;
+            padding: 0 0.5rem;
+            position: relative;
+            z-index: 3;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .bio span {
+            color: #aaaaaa;
+            font-weight: 500;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+            position: relative;
+            z-index: 3;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            cursor: none;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            z-index: -1;
+            padding: 2px;
+            background: linear-gradient(
+                135deg,
+                #ff69b4,
+                #1a1a2e,
+                #ff69b4,
+                #1a1a2e,
+                #ff69b4
+            );
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderShimmer 3s ease-in-out infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-4px) scale(1.05);
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.1);
+        }
+
+        .social-link img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            filter: grayscale(1) brightness(1.2);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .social-link:hover img {
+            filter: grayscale(0.3) brightness(1.4);
+        }
+
+        .social-link .tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.3);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease, bottom 0.3s ease;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .social-link:hover .tooltip {
+            opacity: 1;
+            bottom: -24px;
+        }
+
+        /* ===== ВИДЖЕТ DISCORD ===== */
+        .discord-widget {
+            position: relative;
+            z-index: 3;
+            margin: 0.5rem auto 0;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid transparent;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .discord-widget::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            z-index: -1;
+            padding: 2px;
+            background: linear-gradient(
+                135deg,
+                #ff69b4,
+                #1a1a2e,
+                #ff69b4,
+                #1a1a2e,
+                #ff69b4
+            );
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderShimmer 3s ease-in-out infinite;
+        }
+
+        .discord-widget:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(255, 105, 180, 0.05);
+        }
+
+        .discord-widget .server-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #2b2d31;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .discord-widget .server-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .discord-widget .server-info {
+            flex: 1;
+            text-align: left;
+            min-width: 0;
+        }
+
+        .discord-widget .server-info .server-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .discord-widget .server-info .server-members {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .discord-widget .server-info .server-members .online-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #23a55a;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .discord-widget .join-btn {
+            flex-shrink: 0;
+            padding: 0.35rem 1rem;
+            border-radius: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .discord-widget .join-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.35);
+            position: relative;
+            z-index: 3;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .stats span {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+            user-select: none;
+        }
+
+        .overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .overlay-text {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 0.8rem 2.2rem;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+            background: linear-gradient(
+                90deg,
+                #ffffff 0%,
+                #c0c0c0 25%,
+                #888888 50%,
+                #c0c0c0 75%,
+                #ffffff 100%
+            );
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerOverlay 3s ease-in-out infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.2)) 
+                    drop-shadow(0 0 60px rgba(200, 200, 200, 0.1));
+        }
+
+        @keyframes shimmerOverlay {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .overlay-sub {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 6px;
+            font-weight: 300;
+            text-transform: uppercase;
+            animation: floatSub 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSub {
+            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            50% { transform: translateY(-5px); opacity: 0.6; }
+        }
+
+        #customCursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 80px;
+            height: 80px;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #customCursor.show {
+            opacity: 1;
+        }
+
+        #customCursor img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 1.8rem 1.2rem; border-radius: 2rem; }
+            .card::before { border-radius: 2rem; }
+            .card::after { border-radius: 2rem; }
+            .card .card-bg { border-radius: calc(2rem - 2px); }
+            .avatar-wrapper { width: 85px; height: 85px; }
+            .name { font-size: 1.6rem; }
+            .social-link { width: 50px; height: 50px; }
+            .social-link img { width: 26px; height: 26px; }
+            .discord-widget { padding: 0.7rem 1rem; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
+            .discord-widget .server-icon { width: 40px; height: 40px; }
+            .discord-widget .server-info .server-name { font-size: 0.75rem; }
+            .discord-widget .join-btn { font-size: 0.6rem; padding: 0.25rem 0.7rem; }
+            .stats { gap: 1.2rem; flex-wrap: wrap; }
+            .overlay-text { font-size: 1.4rem; padding: 0.6rem 1.6rem; letter-spacing: 3px; }
+            .overlay-sub { font-size: 0.7rem; letter-spacing: 4px; }
+            #customCursor { width: 60px; height: 60px; }
+            .volume-control { bottom: 1rem; right: 1rem; padding: 0.4rem 0.8rem; }
+            .volume-control input[type="range"] { width: 60px; }
+            .social-links { gap: 0.8rem; }
+        }
     </style>
 </head>
 <body>
 
-<div id="snow-container"></div>
+    <video class="video-bg" id="bgVideo" autoplay loop playsinline>
+        <source src="zobi.mp4" type="video/mp4" />
+    </video>
 
-<div class="container">
-    <h1>RAID HELPER</h1>
+    <div id="customCursor" class="show">
+        <img 
+            src="https://configs-csgo.ru/upload/000/u1/6/e/6e22fbf2.png" 
+            alt="cursor"
+            onerror="this.style.display='none'; this.parentElement.style.display='none';"
+        />
+    </div>
 
-    <div class="main-layout">
-        <div class="left-col">
-            <div class="section active">
-                <div class="acc-header" onclick="toggleAcc(this)">Стены</div>
-                <div class="acc-wrapper"><div class="acc-content"><div class="inner-padding"><div class="grid">
-                    <div class="card" data-id="wood_w" onclick="selectTarget(this)"><img src="materials/woodwall.png"><span>Деревянная стена</span></div>
-                    <div class="card active" data-id="stone_w" onclick="selectTarget(this)"><img src="materials/stonewall.png"><span>Каменная стена</span></div>
-                    <div class="card" data-id="metal_w" onclick="selectTarget(this)"><img src="materials/metalwall.png"><span>Металлическа стена</span></div>
-                    <div class="card" data-id="mvk_w" onclick="selectTarget(this)"><img src="materials/mvkwall.png"><span>МВК стена</span></div>
-                </div></div></div></div>
-            </div>
+    <div class="volume-control" id="volumeControl">
+        <span class="volume-icon">🔊</span>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" />
+        <span class="volume-label" id="volumeLabel">80%</span>
+    </div>
 
-            <div class="section">
-                <div class="acc-header" onclick="toggleAcc(this)">Двери</div>
-                <div class="acc-wrapper"><div class="acc-content"><div class="inner-padding"><div class="grid">
-                    <div class="card" data-id="wood_d" onclick="selectTarget(this)"><img src="materials/wooddoor.png"><span>Деревянная дверь</span></div>
-                    <div class="card" data-id="metal_d" onclick="selectTarget(this)"><img src="materials/metaldoor.png"><span>Дверь из листового металла</span></div>
-                    <div class="card" data-id="garage_d" onclick="selectTarget(this)"><img src="materials/garagedoor.png"><span>Гаражная дверь</span></div>
-                    <div class="card" data-id="mvk_d" onclick="selectTarget(this)"><img src="materials/mvkdoor.png"><span>МВК дверь</span></div>
-                </div></div></div></div>
-            </div>
+    <div class="overlay" id="overlay">
+        <div class="overlay-text">click to continue</div>
+        <div class="overlay-sub">✦ nyfybod.lol ✦</div>
+    </div>
 
-            <div class="section">
-                <div class="acc-header" onclick="toggleAcc(this)">Конструкции</div>
-                <div class="acc-wrapper"><div class="acc-content"><div class="inner-padding">
-                    <span class="sub-label">Защита и Внешние стены</span>
-                    <div class="grid">
-                        <div class="card" data-id="turret" onclick="selectTarget(this)"><img src="materials/turret.png"><span>Турель</span></div>
-                        <div class="card" data-id="high_wood" onclick="selectTarget(this)"><img src="materials/highwoodwall.png"><span>Деревянная высокая стена</span></div>
-                        <div class="card" data-id="high_stone" onclick="selectTarget(this)"><img src="materials/highstonewall.png"><span>Каменная высокая стена</span></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="glass-container" id="mainContent">
+        <div class="card-wrapper" id="cardWrapper">
+            <div class="card" id="card">
+                
+                <!-- ===== ВНУТРЕННИЙ ФОН ===== -->
+                <div class="card-bg"></div>
+
+                <div class="avatar-wrapper layer layer-1">
+                    <div class="avatar-banner">
+                        <img 
+                            src="https://i.pinimg.com/1200x/e3/22/fb/e322fbd951165e2b7211bd0e049f3301.jpg" 
+                            alt="banner"
+                            onerror="this.style.display='none';"
+                        />
                     </div>
-                    <span class="sub-label">Оконные решётки</span>
-                    <div class="grid">
-                        <div class="card" data-id="grate_wood" onclick="selectTarget(this)"><img src="materials/woodgrate.png"><span>Деревянные решетки</span></div>
-                        <div class="card" data-id="grate_metal" onclick="selectTarget(this)"><img src="materials/metalgrate.png"><span>Металлические оконные решётки</span></div>
-                        <div class="card" data-id="grate_mvk" onclick="selectTarget(this)"><img src="materials/mvkgrate.png"><span>Укреплённое стеклянное окно</span></div>
-                        <div class="card" data-id="glass_mvk" onclick="selectTarget(this)"><img src="materials/reinforcedglass.png"><span>Усиленное стеклянное окно</span></div>
-                    </div>
-                </div></div></div>
-            </div>
-        </div>
-
-        <div class="right-col">
-            <div class="section active">
-                <div class="acc-header">Взрывчатка</div>
-                <div class="inner-padding">
-                    <div class="grid" id="tools">
-                        <div class="card" data-tool="satchel" data-sulfur="480" onclick="selectTool(this)">
-                            <img src="materials/satchel.png">
-                            <span>Сачель</span>
-                        </div>
-                        <div class="card active" data-tool="c4" data-sulfur="2200" onclick="selectTool(this)">
-                            <img src="materials/c4.png">
-                            <span>C4</span>
-                        </div>
-                        <div class="card" data-tool="rocket" data-sulfur="1400" onclick="selectTool(this)">
-                            <img src="materials/rocket.png">
-                            <span>Ракета</span>
-                        </div>
-                        <div class="card" data-tool="explosive" data-sulfur="25" onclick="selectTool(this)">
-                            <img src="materials/explosive.png">
-                            <span>Разрывные патроны</span>
-                        </div>
+                    <div class="avatar" id="avatar">
+                        <img 
+                            src="https://i.pinimg.com/vwebp/736x/79/64/96/7964966a8b4f1ee93325c242d057c512.webp" 
+                            alt="avatar"
+                            onerror="this.style.display='none'; this.parentElement.textContent='🤘';"
+                        />
                     </div>
                 </div>
-            </div>
 
-            <div class="result-box">
-                <span style="font-size: 0.65rem; color: #aaa; text-transform: uppercase;">Необходимо</span>
-                <div id="count-out" class="res-val">2</div>
-                <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                    <span style="font-size: 0.65rem; color: #aaa; text-transform: uppercase;">Серы всего</span>
-                    <div id="sulfur-out" class="res-val sulfur-color">4,400</div>
+                <div class="name-wrapper layer layer-2">
+                    <span class="name" id="name"></span>
+                    <span class="typing-cursor" id="cursor"></span>
                 </div>
+                
+                <div class="bio layer layer-2" id="bio">
+                    🐐 <span>vibecoder</span> • design • music<br />
+                    «сижу, пержу и <span>воняю</span>»
+                </div>
+
+                <div class="social-links layer layer-3" id="socialLinks">
+                    <a href="https://t.me/nyfybodyay" class="social-link" id="linkTelegram" target="_blank">
+                        <img 
+                            src="https://cdn-icons-png.magnific.com/512/6422/6422206.png" 
+                            alt="Telegram"
+                            onerror="this.style.display='none'; this.parentElement.innerHTML='📱';"
+                        />
+                        <span class="tooltip">Telegram</span>
+                    </a>
+                    
+                    <a href="https://www.instagram.com/nyfybod/" class="social-link" id="linkInstagram" target="_blank">
+                        <img 
+                            src="https://cdn-icons-png.flaticon.com/512/3621/3621464.png" 
+                            alt="Instagram"
+                            onerror="this.style.display='none'; this.parentElement.innerHTML='📷';"
+                        />
+                        <span class="tooltip">Instagram</span>
+                    </a>
+                    
+                    <a href="https://www.tiktok.com/@nyfybod?_r=1&_t=ZS-98LiR46dU0r" class="social-link" id="linkTikTok" target="_blank">
+                        <img 
+                            src="https://ikonki.svgpng.ru/wp-content/uploads/2021/07/tik-tok.png" 
+                            alt="TikTok"
+                            onerror="this.style.display='none'; this.parentElement.innerHTML='🎵';"
+                        />
+                        <span class="tooltip">TikTok</span>
+                    </a>
+                    
+                    <a href="https://discord.gg/q8Kyn8aA5y" class="social-link" id="linkDiscord" target="_blank">
+                        <img 
+                            src="https://ikonki.svgpng.ru/wp-content/uploads/2021/07/Discord.png" 
+                            alt="Discord"
+                            onerror="this.style.display='none'; this.parentElement.innerHTML='💬';"
+                        />
+                        <span class="tooltip">Discord</span>
+                    </a>
+
+                    <a href="https://steamcommunity.com/profiles/76561199534088715/" class="social-link" id="linkSteam" target="_blank">
+                        <img 
+                            src="https://i.ibb.co/5g5jrcJ9/e0e77079-7372-4d5a-9024-72a0140b6441-fotor-bg-remover-2026080518241.png" 
+                            alt="Steam"
+                            onerror="this.style.display='none'; this.parentElement.innerHTML='🎮';"
+                        />
+                        <span class="tooltip">Steam</span>
+                    </a>
+                </div>
+
+                <!-- ===== ВИДЖЕТ DISCORD ===== -->
+                <div class="discord-widget layer layer-2">
+                    <div class="server-icon">
+                        <img 
+                            src="ava.jpg" 
+                            alt="Server icon"
+                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%232b2d31%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2265%22 text-anchor=%22middle%22 font-size=%2248%22 font-family=%22sans-serif%22 fill=%22%23ffffff%22%3E%F0%9F%92%AC%3C/text%3E%3C/svg%3E';"
+                        />
+                    </div>
+                    <div class="server-info">
+                        <div class="server-name">HANDERA | 18+ Lounge</div>
+                        <div class="server-members">
+                            <span class="online-dot"></span>
+                            <span id="memberCount">0</span> участников
+                        </div>
+                    </div>
+                    <a href="https://discord.gg/q8Kyn8aA5y" class="join-btn" target="_blank">join</a>
+                </div>
+
+                <div class="stats layer layer-2" id="stats">
+                    <div>🔗 <span>5</span> соцсетей</div>
+                </div>
+
             </div>
         </div>
     </div>
-</div>
 
-<!-- НАЧАЛО БЛОКА ПОДДЕРЖКИ -->
-<div style="
-    max-width: 600px;
-    margin: 40px auto 20px auto;
-    padding: 20px 25px;
-    background: rgba(20, 15, 35, 0.9);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(183, 148, 255, 0.3);
-    border-radius: 20px;
-    text-align: center;
-    z-index: 10;
-    position: relative;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-">
-    <h3 style="
-        color: #b794ff;
-        margin-bottom: 12px;
-        font-size: 22px;
-        font-weight: bold;
-        letter-spacing: 1px;
-    ">❤️ Поддержать автора</h3>
-    
-    <p style="
-        color: #f0f0f0;
-        margin-bottom: 20px;
-        font-size: 15px;
-        line-height: 1.4;
-    ">
-        Если мой калькулятор помогает вам в рейдах —<br> 
-        вы можете поддержать проект.
-    </p>
-    
-    <div style="
-        background: #0a081a;
-        padding: 14px;
-        border-radius: 14px;
-        border: 1px solid #b794ff;
-        display: inline-block;
-        width: auto;
-        min-width: 260px;
-    ">
-        <!-- 🔻 ЗДЕСЬ ЗАМЕНИТЕ НОМЕР КАРТЫ НА СВОЙ 🔻 -->
-        <span style="
-            color: #f1c40f;
-            font-size: 20px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        ">💳 2200 7020 5433 4870</span>
-        <!-- 🔺 КОНЕЦ ЗАМЕНЫ 🔺 -->
-        <p style="
-            color: #aaa;
-            font-size: 11px;
-            margin-top: 8px;
-            margin-bottom: 0;
-        ">Т-Банк</p>
-    </div>
-    
-    <p style="
-        color: #7f8c8d;
-        font-size: 12px;
-        margin-top: 18px;
-        margin-bottom: 0;
-    ">
-        Спасибо, что пользуетесь моим инструментом!
-        Контакт: tema350t@gmail.com
+    <script>
+        // ============================================
+        // ПЕЧАТНАЯ МАШИНКА ДЛЯ ЗАГОЛОВКА ВКЛАДКИ
+        // ============================================
+        const titleText = 'nyfybod';
+        let titleIndex = 0;
+        let titleInterval = null;
 
-        Теги (не читать): калькулятор рейдов раст; raid calculator rust; rust raid calculator; калькулятор серы раст; сколько нужно серы на рейд раст; сколько c4 надо на стену раст; сколько ракет надо на стену раст; калькулятор взрывчатки раст; сколько с4 на металлическую стену раст; сколько ракет на металлическую стену раст; сколько с4 на каменную стену раст; сколько ракет на каменную стену раст; сколько с4 на мвк стену раст; сколько ракет на мвк стену раст; сколько с4 на деревянную стену раст; сколько ракет на деревянную стену раст; сколько с4 на гаражную дверь раст; сколько ракет на гаражную дверь раст; сколько с4 на металлическую дверь раст; сколько ракет на металлическую дверь раст; сколько с4 на мвк дверь раст; сколько ракет на мвк дверь раст; сколько с4 на турель раст; сколько ракет на турель раст; сколько с4 на высокую каменную стену раст; сколько ракет на высокую каменную стену раст; рейд базы раст калькулятор; расчёт рейда раст; план рейда раст; сколько серы нужно на с4 раст; сколько серы нужно на ракету раст; сколько пороха нужно на с4 раст; крафт с4 раст ресурсы; крафт ракеты раст ресурсы; rust sulfur calculator; rust explosive calculator; rust raid planner; rust raid cost calculator; rust c4 cost; rust rocket cost; тулкабинет раст калькулятор; взлом базы раст сколько нужно; сколько нужно с4 чтобы снести базу раст; самый дешёвый рейд раст; экономичный рейд раст; сколько серы фармить на рейд; калькулятор ресурсов раст; rust raid helper; best raid calculator rust; rust online raid calculator; rust raid planner online; калькулятор для раста; как взорвать стену в расте калькулятор; сколько сера надо на рейд раст; сколько взрывчатки надо на стену раст; rust satchel raid calculator; сколько сашелей на каменную стену; сашель против с4 раст; rust explosive 5.56 raid calculator; сколько разрывных патронов на стену раст; rust base raid calculator; rust external wall raid calculator; rust high external stone wall raid; rust high external wood wall raid; rust window bars raid calculator; rust reinforced glass window raid; раст рейд турели сколько с4; раст рейд шкафа сколько с4; раст дешёвый рейд через стену; раст дешёвый рейд через дверь; раст оптимальный рейд базы; rust raid profit calculator; стоит ли рейдить базу раст калькулятор; раст калькулятор окупаемости рейда; rust raid sulfur efficiency; раст наиболее выгодный рейд
-    </p>
-</div>
-<!-- КОНЕЦ БЛОКА ПОДДЕРЖКИ -->
+        function typeTitle() {
+            if (titleIndex < titleText.length) {
+                document.title = titleText.substring(0, titleIndex + 1);
+                titleIndex++;
+            } else {
+                clearInterval(titleInterval);
+                setTimeout(() => {
+                    titleIndex = 0;
+                    titleInterval = setInterval(typeTitle, 120);
+                }, 5000);
+            }
+        }
+        setTimeout(() => {
+            titleInterval = setInterval(typeTitle, 120);
+        }, 500);
 
-<script>
-    // Данные по Magic Rust (Стены, Двери, Конструкции)
-    const raidData = {
-        wood_w: { satchel: 3, c4: 1, rocket: 2, explosive: 50 },
-        stone_w: { satchel: 10, c4: 2, rocket: 4, explosive: 186 },
-        metal_w: { satchel: 23, c4: 4, rocket: 8, explosive: 400 },
-        mvk_w: { satchel: 46, c4: 8, rocket: 15, explosive: 800 },
-        
-        wood_d: { satchel: 2, c4: 1, rocket: 1, explosive: 20 },
-        metal_d: { satchel: 4, c4: 1, rocket: 2, explosive: 63 },
-        garage_d: { satchel: 9, c4: 2, rocket: 3, explosive: 150 },
-        mvk_d: { satchel: 12, c4: 2, rocket: 4, explosive: 200 },
-        
-        turret: { satchel: 2, c4: 1, rocket: 3, explosive: 200 },
-        high_wood: { satchel: 6, c4: 2, rocket: 3, explosive: 100 },
-        high_stone: { satchel: 10, c4: 2, rocket: 4, explosive: 185 },
-        
-        grate_wood: { satchel: 3, c4: 1, rocket: 2, explosive: 50 },
-        grate_metal: { satchel: 12, c4: 2, rocket: 3, explosive: 140 },
-        grate_mvk: { satchel: 12, c4: 2, rocket: 4, explosive: 200 },
-        glass_mvk: { satchel: 12, c4: 2, rocket: 4, explosive: 200 }
-    };
+        // ============================================
+        // КУРСОР
+        // ============================================
+        const cursor = document.getElementById('customCursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
-    let selectedTargetId = 'stone_w', selectedTool = 'c4', sulfurPrice = 2200;
+        // ============================================
+        // ПЕЧАТНАЯ МАШИНКА ДЛЯ НИКА (nyfybod)
+        // ============================================
+        const nameElement = document.getElementById('name');
+        const cursorElement = document.getElementById('cursor');
+        const nameText = 'nyfybod';
+        let nameIndex = 0;
+        let isDeleting = false;
 
-    function createRipple(event) {
-        const button = event.currentTarget;
-        const circle = document.createElement("span");
-        const diameter = Math.max(button.clientWidth, button.clientHeight);
-        circle.style.width = circle.style.height = `${diameter}px`;
-        circle.style.left = `${event.clientX - button.getBoundingClientRect().left - diameter/2}px`;
-        circle.style.top = `${event.clientY - button.getBoundingClientRect().top - diameter/2}px`;
-        circle.classList.add("ripple");
-        const prev = button.getElementsByClassName("ripple")[0];
-        if (prev) prev.remove();
-        button.appendChild(circle);
-    }
+        function typeName() {
+            if (!isDeleting) {
+                if (nameIndex < nameText.length) {
+                    nameElement.textContent += nameText.charAt(nameIndex);
+                    nameIndex++;
+                    setTimeout(typeName, 120 + Math.random() * 60);
+                } else {
+                    setTimeout(() => {
+                        isDeleting = true;
+                        typeName();
+                    }, 2000);
+                }
+            } else {
+                if (nameIndex > 0) {
+                    nameElement.textContent = nameText.substring(0, nameIndex - 1);
+                    nameIndex--;
+                    setTimeout(typeName, 80 + Math.random() * 40);
+                } else {
+                    isDeleting = false;
+                    setTimeout(() => {
+                        typeName();
+                    }, 1500);
+                }
+            }
+        }
 
-    function toggleAcc(header) {
-        createRipple(event);
-        header.parentElement.classList.toggle('active');
-    }
+        // ============================================
+        // ЗАСТАВКА + ВИДЕО + ГРОМКОСТЬ
+        // ============================================
+        const overlay = document.getElementById('overlay');
+        const mainContent = document.getElementById('mainContent');
+        const video = document.getElementById('bgVideo');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeLabel = document.getElementById('volumeLabel');
 
-    function selectTarget(el) {
-        createRipple(event);
-        document.querySelectorAll('.left-col .card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        selectedTargetId = el.dataset.id;
-        calculate();
-    }
+        overlay.addEventListener('click', function() {
+            overlay.classList.add('hidden');
+            mainContent.classList.add('active');
+            video.play().catch(() => {});
+            video.muted = false;
+            video.volume = parseFloat(volumeSlider.value);
+            
+            setTimeout(() => {
+                typeName();
+            }, 1000);
+        });
 
-    function selectTool(el) {
-        createRipple(event);
-        document.querySelectorAll('#tools .card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        selectedTool = el.dataset.tool;
-        sulfurPrice = parseInt(el.dataset.sulfur);
-        calculate();
-    }
+        volumeSlider.addEventListener('input', function() {
+            const vol = parseFloat(this.value);
+            video.volume = vol;
+            volumeLabel.textContent = Math.round(vol * 100) + '%';
+        });
 
-    function calculate() {
-        const count = raidData[selectedTargetId][selectedTool];
-        document.getElementById('count-out').innerText = count.toLocaleString();
-        document.getElementById('sulfur-out').innerText = (count * sulfurPrice).toLocaleString();
-    }
+        // ============================================
+        // НАКЛОН КАРТОЧКИ
+        // ============================================
+        const card = document.getElementById('card');
+        let isHovering = false;
+        let isDragging = false;
 
-    document.addEventListener('mousemove', e => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 120;
-        document.documentElement.style.setProperty('--mouse-wind', x + 'px');
-    });
-    setInterval(() => {
-        const p = document.createElement('div');
-        p.className = 'snow-particle';
-        const s = Math.random() * 3 + 1 + 'px';
-        p.style.width = s; p.style.height = s; p.style.left = Math.random() * 100 + 'vw';
-        const d = Math.random() * 2 + 3; p.style.animationDuration = d + 's';
-        document.getElementById('snow-container').appendChild(p);
-        setTimeout(() => p.remove(), d * 1000);
-    }, 40);
-</script>
+        card.addEventListener('mouseenter', () => {
+            if (!isDragging) isHovering = true;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            isHovering = false;
+            if (!isDragging) card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isHovering || isDragging) return;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateY = ((x - centerX) / centerX) * -20;
+            const rotateX = ((y - centerY) / centerY) * 20;
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+
+        // ============================================
+        // PARALLAX 3D
+        // ============================================
+        const layers = document.querySelectorAll('.layer');
+        let mouseX3D = 0, mouseY3D = 0;
+        let targetX3D = 0, targetY3D = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            targetX3D = (e.clientX - centerX) / rect.width;
+            targetY3D = (e.clientY - centerY) / rect.height;
+        });
+
+        function updateParallax() {
+            mouseX3D += (targetX3D - mouseX3D) * 0.08;
+            mouseY3D += (targetY3D - mouseY3D) * 0.08;
+            layers.forEach((layer, i) => {
+                const depth = (i + 1) * 8;
+                const x = mouseX3D * depth;
+                const y = mouseY3D * depth;
+                if (!isDragging) {
+                    layer.style.transform = `translate(${x}px, ${y}px)`;
+                }
+            });
+            requestAnimationFrame(updateParallax);
+        }
+        updateParallax();
+
+        // ============================================
+        // DRAG & DROP
+        // ============================================
+        const wrapper = document.getElementById('cardWrapper');
+        let startX, startY, offsetX, offsetY;
+        let velocityX = 0, velocityY = 0;
+        let lastMoveX = 0, lastMoveY = 0;
+        let dragId = null;
+
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
+        }
+
+        wrapper.addEventListener('mousedown', (e) => {
+            if (e.target.closest('a') || e.target.closest('.social-link')) return;
+            isDragging = true;
+            isHovering = false;
+            const rect = wrapper.getBoundingClientRect();
+            startX = e.clientX;
+            startY = e.clientY;
+            offsetX = rect.left;
+            offsetY = rect.top;
+            wrapper.classList.add('dragging');
+            wrapper.style.cursor = 'grabbing';
+            wrapper.style.transition = 'none';
+            velocityX = 0;
+            velocityY = 0;
+            lastMoveX = e.clientX;
+            lastMoveY = e.clientY;
+            if (dragId) cancelAnimationFrame(dragId);
+            card.style.transform = '';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            velocityX = (e.clientX - lastMoveX) * 0.8;
+            velocityY = (e.clientY - lastMoveY) * 0.8;
+            lastMoveX = e.clientX;
+            lastMoveY = e.clientY;
+            let newX = offsetX + dx;
+            let newY = offsetY + dy;
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const margin = 20;
+            newX = clamp(newX, margin, window.innerWidth - wrapperRect.width - margin);
+            newY = clamp(newY, margin, window.innerHeight - wrapperRect.height - margin);
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = newX + 'px';
+            wrapper.style.top = newY + 'px';
+            wrapper.style.transform = 'none';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                wrapper.classList.remove('dragging');
+                wrapper.style.cursor = 'grab';
+                let inertiaX = velocityX;
+                let inertiaY = velocityY;
+                const friction = 0.92;
+                const minVelocity = 0.1;
+                function applyInertia() {
+                    const rect = wrapper.getBoundingClientRect();
+                    let newX = rect.left + inertiaX;
+                    let newY = rect.top + inertiaY;
+                    const margin = 20;
+                    newX = clamp(newX, margin, window.innerWidth - rect.width - margin);
+                    newY = clamp(newY, margin, window.innerHeight - rect.height - margin);
+                    wrapper.style.position = 'fixed';
+                    wrapper.style.left = newX + 'px';
+                    wrapper.style.top = newY + 'px';
+                    wrapper.style.transition = 'none';
+                    wrapper.style.transform = 'none';
+                    inertiaX *= friction;
+                    inertiaY *= friction;
+                    if (Math.abs(inertiaX) > minVelocity || Math.abs(inertiaY) > minVelocity) {
+                        dragId = requestAnimationFrame(applyInertia);
+                    } else {
+                        wrapper.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    }
+                }
+                if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
+                    applyInertia();
+                } else {
+                    const rect = wrapper.getBoundingClientRect();
+                    const margin = 20;
+                    const targetX = clamp(rect.left, margin, window.innerWidth - rect.width - margin);
+                    const targetY = clamp(rect.top, margin, window.innerHeight - rect.height - margin);
+                    if (rect.left !== targetX || rect.top !== targetY) {
+                        wrapper.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                        wrapper.style.left = targetX + 'px';
+                        wrapper.style.top = targetY + 'px';
+                        setTimeout(() => {
+                            wrapper.style.transition = '';
+                        }, 500);
+                    }
+                }
+            }
+        });
+
+        // ============================================
+        // СНЕГ + ИСКРЫ
+        // ============================================
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resizeCanvas() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Snowflake {
+            constructor() {
+                this.reset();
+                this.x = Math.random() * W;
+                this.y = Math.random() * H;
+                this.alive = true;
+            }
+            reset() {
+                this.x = Math.random() * W;
+                this.y = -10;
+                this.radius = Math.random() * 2.5 + 1;
+                this.speed = Math.random() * 0.5 + 0.2;
+                this.wind = Math.random() * 0.4 - 0.2;
+                const isPink = Math.random() > 0.5;
+                this.color = isPink 
+                    ? `rgba(255, 150, 200, ${0.5 + Math.random() * 0.4})`
+                    : `rgba(255, 255, 255, ${0.5 + Math.random() * 0.4})`;
+                this.glowColor = isPink 
+                    ? 'rgba(255, 150, 200, 0.1)'
+                    : 'rgba(200, 230, 255, 0.1)';
+                this.swing = Math.random() * 2 - 1;
+                this.swingSpeed = Math.random() * 0.015 + 0.005;
+                this.angle = Math.random() * Math.PI * 2;
+                this.alive = true;
+                this.explodeTimer = 0;
+                this.explodeParticles = [];
+            }
+            update(mouseX, mouseY, mouseInfluence) {
+                if (!this.alive) {
+                    this.explodeTimer--;
+                    for (let i = this.explodeParticles.length - 1; i >= 0; i--) {
+                        const p = this.explodeParticles[i];
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.02;
+                        p.life -= 0.02;
+                        p.radius *= 0.98;
+                        if (p.life <= 0 || p.radius < 0.1) {
+                            this.explodeParticles.splice(i, 1);
+                        }
+                    }
+                    if (this.explodeTimer <= 0 && this.explodeParticles.length === 0) {
+                        this.reset();
+                        this.alive = true;
+                    }
+                    return;
+                }
+                let dx = this.wind;
+                let dy = this.speed;
+                if (mouseInfluence > 0.1) {
+                    const angleToMouse = Math.atan2(mouseY - this.y, mouseX - this.x);
+                    const dist = Math.hypot(mouseX - this.x, mouseY - this.y);
+                    const force = Math.min(0.2, 30 / (dist + 10)) * mouseInfluence;
+                    dx += Math.cos(angleToMouse) * force;
+                    dy += Math.sin(angleToMouse) * force;
+                }
+                this.angle += this.swingSpeed;
+                dx += Math.sin(this.angle) * 0.2;
+                this.x += dx;
+                this.y += dy;
+                if (this.y > H + 10) {
+                    this.reset();
+                    this.y = -10;
+                }
+                if (this.x > W + 10) this.x = -10;
+                if (this.x < -10) this.x = W + 10;
+            }
+            explode() {
+                if (!this.alive) return;
+                this.alive = false;
+                this.explodeTimer = 40;
+                const hue = Math.random() > 0.5 ? 330 : 0;
+                for (let i = 0; i < 6; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 2 + 0.5;
+                    this.explodeParticles.push({
+                        x: this.x,
+                        y: this.y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 0.5,
+                        radius: Math.random() * 2 + 0.5,
+                        life: 1,
+                        color: hue === 330 ? `hsl(330, 100%, ${70 + Math.random() * 30}%)` : `hsl(0, 0%, ${80 + Math.random() * 20}%)`
+                    });
+                }
+            }
+            draw() {
+                if (!this.alive) {
+                    for (const p of this.explodeParticles) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, Math.max(p.radius, 0.2), 0, Math.PI * 2);
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = p.life * 0.9;
+                        ctx.fill();
+                        ctx.shadowColor = 'rgba(255, 255, 255, 0.15)';
+                        ctx.shadowBlur = 6;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        ctx.globalAlpha = 1;
+                    }
+                    return;
+                }
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.shadowColor = this.glowColor;
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            contains(mx, my) {
+                if (!this.alive) return false;
+                const dx = this.x - mx;
+                const dy = this.y - my;
+                return (dx * dx + dy * dy) < (this.radius + 10) * (this.radius + 10);
+            }
+        }
+
+        class Spark {
+            constructor(x, y, mode = 'down') {
+                this.x = x;
+                this.y = y;
+                this.mode = mode;
+                if (mode === 'explode') {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 3 + 1;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed - 0.5;
+                } else {
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = Math.random() * 1 + 0.8;
+                }
+                this.life = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+                this.radius = Math.random() * 2 + 0.8;
+                const brightness = Math.floor(Math.random() * 60 + 195);
+                this.color = `${brightness}, ${brightness}, ${brightness}`;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.mode === 'explode') {
+                    this.vy += 0.03;
+                    this.vx *= 0.99;
+                    this.vy *= 0.99;
+                } else {
+                    this.vy += 0.015;
+                }
+                this.life -= this.decay;
+                this.radius *= 0.997;
+            }
+            draw() {
+                const alpha = this.life * 0.9;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, Math.max(this.radius, 0.2), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${this.color}, ${alpha})`;
+                ctx.fill();
+                if (this.life > 0.3) {
+                    ctx.shadowColor = `rgba(255, 255, 255, ${alpha * 0.3})`;
+                    ctx.shadowBlur = 10;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+            isDead() {
+                return this.life <= 0 || this.radius < 0.2 || this.y > H + 20;
+            }
+        }
+
+        const snowflakes = [];
+        const sparks = [];
+        let mouseX = -1000, mouseY = -1000, mouseInfluence = 0;
+
+        for (let i = 0; i < 80; i++) {
+            snowflakes.push(new Snowflake());
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseInfluence = 1;
+            for (let i = 0; i < 1; i++) {
+                sparks.push(new Spark(
+                    mouseX + (Math.random() - 0.5) * 10,
+                    mouseY + (Math.random() - 0.5) * 3,
+                    'down'
+                ));
+            }
+        });
+
+        setInterval(() => {
+            mouseInfluence = Math.max(0, mouseInfluence - 0.02);
+        }, 16);
+
+        document.addEventListener('click', (e) => {
+            const mx = e.clientX;
+            const my = e.clientY;
+            for (const flake of snowflakes) {
+                if (flake.contains(mx, my)) {
+                    flake.explode();
+                    for (let i = 0; i < 3; i++) {
+                        sparks.push(new Spark(
+                            flake.x + (Math.random() - 0.5) * 8,
+                            flake.y + (Math.random() - 0.5) * 8,
+                            'explode'
+                        ));
+                    }
+                    break;
+                }
+            }
+            for (let i = 0; i < 12; i++) {
+                sparks.push(new Spark(
+                    mx + (Math.random() - 0.5) * 15,
+                    my + (Math.random() - 0.5) * 15,
+                    'explode'
+                ));
+            }
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, W, H);
+            for (const flake of snowflakes) {
+                flake.update(mouseX, mouseY, mouseInfluence);
+                flake.draw();
+            }
+            for (let i = sparks.length - 1; i >= 0; i--) {
+                sparks[i].update();
+                sparks[i].draw();
+                if (sparks[i].isDead()) {
+                    sparks.splice(i, 1);
+                }
+            }
+            if (sparks.length > 80) {
+                sparks.splice(0, sparks.length - 80);
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ============================================
+        // ПУЛЬСАЦИЯ
+        // ============================================
+        setTimeout(() => {
+            document.querySelectorAll('.card, .avatar, .name, .bio, .social-link, .stats, .discord-widget')
+                .forEach(el => {
+                    el.classList.add('pulse');
+                });
+        }, 500);
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+
+        // ============================================
+        // ПОЛУЧЕНИЕ КОЛИЧЕСТВА УЧАСТНИКОВ DISCORD
+        // ============================================
+        async function fetchDiscordMembers() {
+            try {
+                const response = await fetch('https://discord.com/api/v9/invites/q8Kyn8aA5y?with_counts=true');
+                const data = await response.json();
+                const count = data.approximate_member_count || 0;
+                document.getElementById('memberCount').textContent = count;
+            } catch (error) {
+                console.log('Не удалось получить количество участников Discord');
+                document.getElementById('memberCount').textContent = '?';
+            }
+        }
+
+        fetchDiscordMembers();
+        setInterval(fetchDiscordMembers, 30000);
+
+        console.log('🎯 МГНОВЕННЫЙ прицел!');
+        console.log('🌸 СНЕГ');
+        console.log('📝 НИК nyfybod — печатается и стирается циклично!');
+        console.log('🌫️ ЧЁРНО-БЕЛЫЙ ПЕРЕЛИВАЮЩИЙСЯ ФОН');
+        console.log('🔮 РОЗОВАЯ ГРАНИЦА ПО ПЕРИМЕТРУ');
+        console.log('🔊 РЕГУЛИРОВКА ГРОМКОСТИ!');
+        console.log('🔄 НАКЛОН КАРТОЧКИ!');
+        console.log('🖱️ DRAG & DROP!');
+        console.log('💬 ВИДЖЕТ HANDERA | 18+ Lounge');
+    </script>
 </body>
 </html>
