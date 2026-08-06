@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <style>
+        /* ... весь твой стиль остаётся без изменений ... */
         * {
             margin: 0;
             padding: 0;
@@ -125,7 +126,6 @@
             filter: drop-shadow(0 20px 60px rgba(255, 255, 255, 0.08));
         }
 
-        /* ===== КАРТОЧКА ===== */
         .card {
             width: 100%;
             padding: 2.5rem 2rem 2.2rem;
@@ -140,7 +140,6 @@
             overflow: hidden;
         }
 
-        /* ——— ЧЁРНО-БЕЛЫЙ ПЕРЕЛИВАЮЩИЙСЯ ФОН ——— */
         .card::before {
             content: "";
             position: absolute;
@@ -171,7 +170,6 @@
             100% { background-position: 0% 50%; transform: rotate(360deg) scale(1); }
         }
 
-        /* ——— РОЗОВАЯ ГРАНИЦА ПО ПЕРИМЕТРУ ——— */
         .card::after {
             content: "";
             position: absolute;
@@ -201,7 +199,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* ——— ВНУТРЕННИЙ ФОН (поверх перелива, но под контентом) ——— */
         .card .card-bg {
             position: absolute;
             z-index: 2;
@@ -452,7 +449,6 @@
             bottom: -24px;
         }
 
-        /* ===== ВИДЖЕТ DISCORD ===== */
         .discord-widget {
             position: relative;
             z-index: 3;
@@ -724,7 +720,7 @@
 </head>
 <body>
 
-    <video class="video-bg" id="bgVideo" autoplay loop playsinline>
+    <video class="video-bg" id="bgVideo" autoplay loop playsinline muted>
         <source src="zobi.mp4" type="video/mp4" />
     </video>
 
@@ -753,7 +749,6 @@
         <div class="card-wrapper" id="cardWrapper">
             <div class="card" id="card">
                 
-                <!-- ===== ВНУТРЕННИЙ ФОН ===== -->
                 <div class="card-bg"></div>
 
                 <div class="avatar-wrapper layer layer-1">
@@ -830,7 +825,6 @@
                     </a>
                 </div>
 
-                <!-- ===== ВИДЖЕТ DISCORD ===== -->
                 <div class="discord-widget layer layer-2">
                     <div class="server-icon">
                         <img 
@@ -937,9 +931,11 @@
         overlay.addEventListener('click', function() {
             overlay.classList.add('hidden');
             mainContent.classList.add('active');
-            video.play().catch(() => {});
+            
+            // Сначала убираем muted, потом ставим громкость и играем
             video.muted = false;
             video.volume = parseFloat(volumeSlider.value);
+            video.play().catch(() => {});
             
             setTimeout(() => {
                 typeName();
