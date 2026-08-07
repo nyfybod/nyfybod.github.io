@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>nyfybod</title>
+    <meta name="description" content="nyfybod — vibecoder, design, music. Telegram, Instagram, Discord, Steam." />
+
+    <!-- Замени на свою иконку (32x32 или 64x64 .png/.ico), положи рядом с index.html -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <!-- Open Graph — превью при отправке ссылки в Telegram/Discord/соцсети -->
+    <meta property="og:title" content="nyfybod" />
+    <meta property="og:description" content="vibecoder • design • music" />
+    <meta property="og:image" content="og-preview.jpg" /><!-- замени на свою картинку 1200x630 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nyfybod.lol" /><!-- замени на реальный домен -->
+    <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
@@ -12,8 +25,25 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none !important;
+        }
+
+        /* Курсор скрываем только внутри интерактивной зоны сайта,
+           не глобально — если кастомная картинка не загрузится,
+           пользователь не останется без курсора вообще. */
+        body.custom-cursor-active,
+        body.custom-cursor-active * {
+            cursor: none;
+        }
+
+        /* Текст можно выделять и копировать по умолчанию;
+           явно запрещаем только там, где это мешает (кнопки, декоративные элементы) */
+        .card, .social-link, .discord-widget, .join-btn, .notif-btn,
+        .overlay, .volume-control, #customCursor {
             user-select: none;
+        }
+
+        .bio, .name, .server-name {
+            user-select: text;
         }
 
         body {
@@ -42,18 +72,18 @@
             z-index: 20;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
             background: rgba(18, 18, 24, 0.7);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 30px;
-            padding: 0.5rem 1.2rem 0.5rem 1rem;
+            padding: 0.5rem 1.2rem 0.5rem 0.8rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             cursor: none;
         }
 
         .volume-control input[type="range"] {
-            width: 100px;
+            width: 80px;
             height: 4px;
             -webkit-appearance: none;
             appearance: none;
@@ -61,6 +91,41 @@
             border-radius: 2px;
             outline: none;
             cursor: none;
+        }
+
+        .player-btn {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+            opacity: 0.75;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .player-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .player-btn.play-btn {
+            opacity: 0.95;
+        }
+
+        .player-btn img {
+            width: 15px;
+            height: 15px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .player-btn.play-btn img {
+            width: 18px;
+            height: 18px;
         }
 
         .volume-control input[type="range"]::-webkit-slider-thumb {
@@ -100,6 +165,11 @@
 
         .glass-container.active {
             display: flex;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(35, 165, 90, 0.5); }
+            50% { box-shadow: 0 0 0 6px rgba(35, 165, 90, 0); }
         }
 
         @keyframes fadeIn {
@@ -226,8 +296,32 @@
             z-index: 3;
             border-radius: 50%;
             box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.15), 0 10px 30px rgba(0, 0, 0, 0.4);
-            overflow: hidden;
             flex-shrink: 0;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 3px solid #0b0b0e;
+            z-index: 4;
+            background: #80848e; /* по умолчанию — неизвестно */
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            transition: background 0.3s ease;
+        }
+
+        .status-dot[data-status="online"] { background: #23a55a; }
+        .status-dot[data-status="idle"] { background: #f0b232; }
+        .status-dot[data-status="dnd"] { background: #f23f43; }
+        .status-dot[data-status="offline"] { background: #80848e; }
+
+        .status-dot[data-status="online"],
+        .status-dot[data-status="idle"],
+        .status-dot[data-status="dnd"] {
+            animation: pulseDot 2s ease-in-out infinite;
         }
 
         .avatar-banner {
@@ -239,13 +333,28 @@
             background: linear-gradient(135deg, #1a1a2e, #16213e);
         }
 
+        .avatar-banner img,
+        .avatar img {
+            filter: blur(16px);
+            transform: scale(1.15);
+            opacity: 0;
+            transition: filter 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .avatar-banner img.loaded,
+        .avatar img.loaded {
+            filter: blur(0);
+            opacity: 0.85;
+            transform: scale(1);
+        }
+
+        .avatar img.loaded { opacity: 1; }
+
         .avatar-banner img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            opacity: 0.85;
-            transition: transform 0.4s ease, opacity 0.4s ease;
         }
 
         .avatar-banner::after {
@@ -257,7 +366,7 @@
             pointer-events: none;
         }
 
-        .avatar-wrapper:hover .avatar-banner img {
+        .avatar-wrapper:hover .avatar-banner img.loaded {
             transform: scale(1.08);
             opacity: 1;
         }
@@ -288,6 +397,12 @@
             border-radius: 50%;
             position: relative;
             z-index: 1;
+        }
+
+        .avatar-fallback {
+            position: relative;
+            z-index: 0;
+            line-height: 1;
         }
 
         .name-wrapper {
@@ -358,6 +473,32 @@
             color: #aaaaaa;
             font-weight: 500;
         }
+
+        .discord-status-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: -1.4rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        .status-dot-inline {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #80848e;
+            flex-shrink: 0;
+        }
+
+        .status-dot-inline[data-status="online"] { background: #23a55a; }
+        .status-dot-inline[data-status="idle"] { background: #f0b232; }
+        .status-dot-inline[data-status="dnd"] { background: #f23f43; }
+        .status-dot-inline[data-status="offline"] { background: #80848e; }
 
         .social-links {
             display: flex;
@@ -800,8 +941,8 @@
             .overlay-text { font-size: 1.4rem; padding: 0.6rem 1.6rem; letter-spacing: 3px; }
             .overlay-sub { font-size: 0.7rem; letter-spacing: 4px; }
             #customCursor { width: 60px; height: 60px; }
-            .volume-control { bottom: 1rem; right: 1rem; padding: 0.4rem 0.8rem; }
-            .volume-control input[type="range"] { width: 60px; }
+            .volume-control { bottom: 1rem; right: 1rem; padding: 0.4rem 0.7rem; gap: 0.4rem; }
+            .volume-control input[type="range"] { width: 50px; }
             .social-links { gap: 0.8rem; }
             .notification { padding: 1.2rem 1.2rem 1.2rem 1.2rem; bottom: 80px; }
             .notification .notif-title { font-size: 0.95rem; }
@@ -811,19 +952,24 @@
 </head>
 <body>
 
-    <video class="video-bg" id="bgVideo" autoplay loop playsinline muted>
+    <video class="video-bg" id="bgVideo" autoplay loop playsinline muted
+           preload="auto" poster="video-poster.jpg">
         <source src="zobi.mp4" type="video/mp4" />
     </video>
 
     <div id="customCursor" class="show">
         <img 
-            src="https://configs-csgo.ru/upload/000/u1/6/e/6e22fbf2.png" 
+            src="cursor.png"
             alt="cursor"
-            onerror="this.style.display='none'; this.parentElement.style.display='none';"
+            onload="document.body.classList.add('custom-cursor-active');"
+            onerror="this.style.display='none'; this.parentElement.style.display='none'; document.body.classList.remove('custom-cursor-active');"
         />
     </div>
 
     <div class="volume-control" id="volumeControl">
+        <button class="player-btn play-btn" id="soundToggleBtn" type="button" aria-label="Пауза/воспроизведение" title="Пауза">
+            <img id="soundToggleIcon" src="icons/pause.png" alt="toggle" onerror="this.style.display='none';" />
+        </button>
         <span class="volume-icon">🔊</span>
         <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" />
         <span class="volume-label" id="volumeLabel">80%</span>
@@ -855,18 +1001,22 @@
                 <div class="avatar-wrapper layer layer-1">
                     <div class="avatar-banner">
                         <img 
-                            src="https://i.pinimg.com/1200x/e3/22/fb/e322fbd951165e2b7211bd0e049f3301.jpg" 
+                            src="banner.jpg"
                             alt="banner"
+                            onload="this.classList.add('loaded');"
                             onerror="this.style.display='none';"
                         />
                     </div>
                     <div class="avatar" id="avatar">
+                        <span class="avatar-fallback">🤘</span>
                         <img 
-                            src="https://i.pinimg.com/vwebp/736x/79/64/96/7964966a8b4f1ee93325c242d057c512.webp" 
+                            src="avatar.jpg"
                             alt="avatar"
-                            onerror="this.style.display='none'; this.parentElement.textContent='🤘';"
+                            onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';"
+                            onerror="this.style.display='none';"
                         />
                     </div>
+                    <div class="status-dot" id="statusDot" data-status="offline" title="Discord: неизвестно"></div>
                 </div>
 
                 <div class="name-wrapper layer layer-2">
@@ -879,10 +1029,15 @@
                     «сижу, пержу и <span>воняю</span>»
                 </div>
 
+                <div class="discord-status-line layer layer-2" id="discordStatusLine">
+                    <span class="status-dot-inline" id="statusDotInline" data-status="offline"></span>
+                    <span id="discordStatusText">Discord: загрузка...</span>
+                </div>
+
                 <div class="social-links layer layer-3" id="socialLinks">
                     <a href="https://t.me/nyfybodyay" class="social-link" id="linkTelegram" target="_blank">
                         <img 
-                            src="https://cdn-icons-png.magnific.com/512/6422/6422206.png" 
+                            src="icons/telegram.png"
                             alt="Telegram"
                             onerror="this.style.display='none'; this.parentElement.innerHTML='📱';"
                         />
@@ -891,7 +1046,7 @@
                     
                     <a href="https://www.instagram.com/nyfybod/" class="social-link" id="linkInstagram" target="_blank">
                         <img 
-                            src="https://cdn-icons-png.flaticon.com/512/3621/3621464.png" 
+                            src="icons/instagram.png"
                             alt="Instagram"
                             onerror="this.style.display='none'; this.parentElement.innerHTML='📷';"
                         />
@@ -900,7 +1055,7 @@
                     
                     <a href="https://www.tiktok.com/@nyfybod?_r=1&_t=ZS-98LiR46dU0r" class="social-link" id="linkTikTok" target="_blank">
                         <img 
-                            src="https://ikonki.svgpng.ru/wp-content/uploads/2021/07/tik-tok.png" 
+                            src="icons/tiktok.png"
                             alt="TikTok"
                             onerror="this.style.display='none'; this.parentElement.innerHTML='🎵';"
                         />
@@ -909,7 +1064,7 @@
                     
                     <a href="https://discord.gg/q8Kyn8aA5y" class="social-link" id="linkDiscord" target="_blank">
                         <img 
-                            src="https://ikonki.svgpng.ru/wp-content/uploads/2021/07/Discord.png" 
+                            src="icons/discord.png"
                             alt="Discord"
                             onerror="this.style.display='none'; this.parentElement.innerHTML='💬';"
                         />
@@ -918,7 +1073,7 @@
 
                     <a href="https://steamcommunity.com/profiles/76561199534088715/" class="social-link" id="linkSteam" target="_blank">
                         <img 
-                            src="https://i.ibb.co/5g5jrcJ9/e0e77079-7372-4d5a-9024-72a0140b6441-fotor-bg-remover-2026080518241.png" 
+                            src="icons/steam.png"
                             alt="Steam"
                             onerror="this.style.display='none'; this.parentElement.innerHTML='🎮';"
                         />
@@ -1016,9 +1171,12 @@
         const video = document.getElementById('bgVideo');
         const volumeSlider = document.getElementById('volumeSlider');
         const volumeLabel = document.getElementById('volumeLabel');
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        const soundToggleIcon = document.getElementById('soundToggleIcon');
         const notification = document.getElementById('notification');
         const notifClose = document.getElementById('notifClose');
         let overlayClicked = false;
+        let isPaused = true;
 
         overlay.addEventListener('click', function() {
             if (overlayClicked) return;
@@ -1026,11 +1184,13 @@
 
             overlay.classList.add('hidden');
             mainContent.classList.add('active');
-            
+
             video.muted = false;
             video.volume = parseFloat(volumeSlider.value);
             video.play().catch(() => {});
-            
+            isPaused = false;
+            soundToggleIcon.src = 'icons/pause.png';
+
             setTimeout(() => {
                 typeName();
             }, 1000);
@@ -1043,6 +1203,21 @@
         notifClose.addEventListener('click', function(e) {
             e.stopPropagation();
             notification.classList.remove('show');
+        });
+
+        soundToggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (isPaused) {
+                video.play().catch(() => {});
+                isPaused = false;
+                soundToggleIcon.src = 'icons/pause.png';
+                soundToggleBtn.title = 'Пауза';
+            } else {
+                video.pause();
+                isPaused = true;
+                soundToggleIcon.src = 'icons/play.png';
+                soundToggleBtn.title = 'Воспроизвести';
+            }
         });
 
         document.addEventListener('click', function(e) {
@@ -1474,19 +1649,142 @@
             resizeCanvas();
         });
 
+        let discordFetchFailures = 0;
+        let discordPollTimer = null;
+
         async function fetchDiscordMembers() {
             try {
-                const response = await fetch('https://discord.com/api/v9/invites/q8Kyn8aA5y?with_counts=true');
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
+                const response = await fetch(
+                    'https://discord.com/api/v9/invites/q8Kyn8aA5y?with_counts=true',
+                    { signal: controller.signal }
+                );
+                clearTimeout(timeout);
+                if (!response.ok) throw new Error('bad response');
                 const data = await response.json();
-                const count = data.approximate_member_count || 0;
-                document.getElementById('memberCount').textContent = count;
+                const count = data.approximate_member_count;
+                document.getElementById('memberCount').textContent =
+                    typeof count === 'number' ? count : '?';
+                discordFetchFailures = 0;
             } catch (error) {
                 document.getElementById('memberCount').textContent = '?';
+                discordFetchFailures++;
+                // после 5 неудач подряд (~2.5 мин) прекращаем опрос,
+                // чтобы не слать запросы к недоступному/невалидному инвайту вечно
+                if (discordFetchFailures >= 5 && discordPollTimer) {
+                    clearInterval(discordPollTimer);
+                    discordPollTimer = null;
+                }
             }
         }
 
         fetchDiscordMembers();
-        setInterval(fetchDiscordMembers, 30000);
+        discordPollTimer = setInterval(fetchDiscordMembers, 30000);
+
+        // ===== Lanyard: реальный онлайн/оффлайн статус + аватарка Discord =====
+        const LANYARD_USER_ID = '814224734475911188';
+        const statusDot = document.getElementById('statusDot');
+        const statusDotInline = document.getElementById('statusDotInline');
+        const discordStatusText = document.getElementById('discordStatusText');
+        const avatarImg = document.querySelector('.avatar img');
+        const statusLabels = {
+            online: 'В сети',
+            idle: 'Отошёл',
+            dnd: 'Не беспокоить',
+            offline: 'Не в сети'
+        };
+        let discordAvatarApplied = false;
+        const LAST_SEEN_KEY = 'nyfybod_discord_last_online';
+
+        function formatLastSeen(timestamp) {
+            const diffMs = Date.now() - timestamp;
+            const minutes = Math.floor(diffMs / 60000);
+            if (minutes < 1) return 'только что';
+            if (minutes < 60) return `${minutes} мин назад`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} ч назад`;
+            const days = Math.floor(hours / 24);
+            if (days < 30) return `${days} дн назад`;
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        }
+
+        function applyLanyardStatus(status) {
+            const known = ['online', 'idle', 'dnd', 'offline'];
+            const safeStatus = known.includes(status) ? status : 'offline';
+
+            if (statusDot) {
+                statusDot.setAttribute('data-status', safeStatus);
+                statusDot.title = 'Discord: ' + (statusLabels[safeStatus] || 'неизвестно');
+            }
+            if (statusDotInline) {
+                statusDotInline.setAttribute('data-status', safeStatus);
+            }
+
+            if (safeStatus !== 'offline') {
+                // в сети — запоминаем текущий момент как последний онлайн
+                localStorage.setItem(LAST_SEEN_KEY, String(Date.now()));
+                if (discordStatusText) {
+                    discordStatusText.textContent = 'Discord: ' + statusLabels[safeStatus];
+                }
+            } else if (discordStatusText) {
+                const stored = localStorage.getItem(LAST_SEEN_KEY);
+                if (stored) {
+                    discordStatusText.textContent = 'был(а) в сети ' + formatLastSeen(parseInt(stored, 10));
+                } else {
+                    discordStatusText.textContent = 'Discord: не в сети';
+                }
+            }
+        }
+
+        function applyDiscordAvatar(discordUser) {
+            // Подставляем реальную аватарку из Discord только один раз —
+            // и только если локальная avatar.jpg ещё не подгрузилась/не существует.
+            if (discordAvatarApplied || !avatarImg || !discordUser || !discordUser.avatar) return;
+            if (avatarImg.classList.contains('loaded')) return; // локальная картинка уже есть, не перетираем
+
+            const ext = discordUser.avatar.startsWith('a_') ? 'gif' : 'png';
+            const url = `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${ext}?size=256`;
+            avatarImg.onload = function () {
+                this.classList.add('loaded');
+                this.style.display = '';
+                const fallback = this.previousElementSibling;
+                if (fallback) fallback.style.display = 'none';
+            };
+            avatarImg.src = url;
+            discordAvatarApplied = true;
+        }
+
+        async function pollLanyard() {
+            try {
+                const res = await fetch('https://api.lanyard.rest/v1/users/' + LANYARD_USER_ID);
+                if (!res.ok) throw new Error('bad response');
+                const json = await res.json();
+                if (json && json.success && json.data) {
+                    applyLanyardStatus(json.data.discord_status);
+                    applyDiscordAvatar(json.data.discord_user);
+                } else {
+                    applyLanyardStatus('offline');
+                }
+            } catch (e) {
+                applyLanyardStatus('offline');
+            }
+        }
+
+        pollLanyard();
+        setInterval(pollLanyard, 20000);
+
+        // Отдельно обновляем текст "N назад" каждую минуту, чтобы он не
+        // зависел от частоты опроса Lanyard (иначе "только что" виснет надолго)
+        setInterval(() => {
+            if (statusDot && statusDot.getAttribute('data-status') === 'offline' && discordStatusText) {
+                const stored = localStorage.getItem(LAST_SEEN_KEY);
+                if (stored) {
+                    discordStatusText.textContent = 'был(а) в сети ' + formatLastSeen(parseInt(stored, 10));
+                }
+            }
+        }, 60000);
     </script>
 </body>
 </html>
